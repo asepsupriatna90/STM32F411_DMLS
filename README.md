@@ -214,15 +214,15 @@ Saat dinyalakan, sistem menampilkan layar utama dengan informasi input, output a
 ## Struktur Proyek
 
 ```
-AudioCrossover/
-├── AudioCrossover.ioc         # File konfigurasi STM32CubeMX
+STM32F411_DMLS/
+├── STM32F411_DMLS.ioc         # File konfigurasi STM32CubeMX
 ├── README.md                  # Dokumentasi proyek
 │
 ├── Core/
 │   ├── Inc/
 │   │   ├── main.h            # Main header file
 │   │   ├── gpio.h            # GPIO configuration
-│   │   ├── dma.h             # DMA for audio streams
+│   │   ├── dma.h             # DMA untuk audio streams
 │   │   ├── i2c.h             # I2C untuk OLED dan EEPROM
 │   │   ├── i2s.h             # I2S untuk audio codec
 │   │   ├── spi.h             # SPI untuk storage
@@ -231,61 +231,139 @@ AudioCrossover/
 │   │   └── stm32f4xx_it.h    # Interrupt handlers
 │   │
 │   └── Src/
-│       ├── main.c            # Program utama
-│       ├── system_init.c     # Inisialisasi sistem
-│       └── [other core files]
+│       ├── main.c            # Entry point (250-350 baris)
+│       ├── system_init.c     # Inisialisasi sistem (200-250 baris)
+│       ├── gpio.c            # Implementasi GPIO (100-150 baris)
+│       ├── i2c.c             # Implementasi I2C (100-150 baris)
+│       ├── i2s.c             # Implementasi I2S (100-150 baris)
+│       ├── spi.c             # Implementasi SPI (100-150 baris)
+│       ├── tim.c             # Implementasi timer (100-150 baris)
+│       ├── usart.c           # Implementasi UART (100-150 baris)
+│       ├── dma.c             # Implementasi DMA (150-200 baris)
+│       └── stm32f4xx_it.c    # Interrupt handlers (200-300 baris)
 │
-├── Drivers/                   # HAL dan CMSIS drivers
+├── Drivers/                   # HAL dan CMSIS drivers (tidak dimodifikasi)
 │
 ├── Audio/
 │   ├── Inc/
-│   │   ├── audio_driver.h     # Audio I/O
-│   │   ├── audio_routing.h    # Input-Output routing
-│   │   ├── audio_processing.h # DSP chain
-│   │   └── audio_utils.h      # Fungsi utilitas audio
+│   │   ├── audio_config.h     # Konfigurasi audio umum
+│   │   ├── audio_driver.h     # Interface driver audio
+│   │   ├── audio_routing.h    # Definisi routing
+│   │   ├── audio_processing.h # Rantai DSP
+│   │   ├── audio_utils.h      # Fungsi utilitas
+│   │   ├── codec_pcm1808.h    # Driver untuk ADC PCM1808
+│   │   └── codec_pcm5102a.h   # Driver untuk DAC PCM5102A
 │   │
 │   └── Src/
-│       ├── audio_driver.c     # Driver audio 
-│       ├── audio_routing.c    # Implementasi routing
-│       └── [other audio files]
+│       ├── audio_config.c     # Implementasi konfigurasi (150-200 baris)
+│       ├── audio_driver.c     # Implementasi driver (300-350 baris)
+│       ├── audio_routing.c    # Implementasi routing (250-300 baris)
+│       ├── audio_processing.c # Orchestrator proses DSP (300-400 baris)
+│       ├── audio_utils.c      # Implementasi utilitas (200-250 baris)
+│       ├── codec_pcm1808.c    # Implementasi ADC (200-250 baris)
+│       └── codec_pcm5102a.c   # Implementasi DAC (200-250 baris)
 │
 ├── DSP/
 │   ├── Inc/
-│   │   ├── crossover.h        # Crossover interface
-│   │   ├── peq.h              # Parametric EQ
-│   │   ├── compressor.h       # Compressor interface
-│   │   ├── limiter.h          # Limiter
-│   │   └── delay.h            # Delay
+│   │   ├── dsp_common.h       # Definisi umum DSP
+│   │   ├── crossover_types.h  # Tipe data crossover
+│   │   ├── crossover.h        # Interface crossover
+│   │   ├── peq_types.h        # Tipe data equalizer
+│   │   ├── peq.h              # Interface parametric EQ
+│   │   ├── compressor_types.h # Tipe data compressor
+│   │   ├── compressor.h       # Interface compressor
+│   │   ├── limiter_types.h    # Tipe data limiter
+│   │   ├── limiter.h          # Interface limiter
+│   │   ├── delay_types.h      # Tipe data delay
+│   │   └── delay.h            # Interface delay
 │   │
 │   └── Src/
-│       ├── crossover.c        # Implementasi crossover
-│       ├── peq.c              # Implementasi Parametric EQ
-│       └── [other DSP files]
+│       ├── dsp_common.c       # Implementasi fungsi DSP umum (200-250 baris)
+│       ├── crossover_init.c   # Inisialisasi crossover (150-200 baris)
+│       ├── crossover_filter.c # Filter crossover (300-350 baris)
+│       ├── crossover_config.c # Konfigurasi crossover (200-250 baris)
+│       ├── peq_init.c         # Inisialisasi EQ (150-200 baris)
+│       ├── peq_filter.c       # Filter EQ (300-350 baris)
+│       ├── peq_config.c       # Konfigurasi EQ (200-250 baris)
+│       ├── compressor_init.c  # Inisialisasi kompresor (150-200 baris)
+│       ├── compressor_proc.c  # Proses kompresor (300-350 baris)
+│       ├── compressor_config.c # Konfigurasi kompresor (200-250 baris)
+│       ├── limiter_init.c     # Inisialisasi limiter (100-150 baris)
+│       ├── limiter_proc.c     # Proses limiter (250-300 baris)
+│       ├── delay_init.c       # Inisialisasi delay (100-150 baris)
+│       └── delay_proc.c       # Proses delay (200-250 baris)
+│
+├── Filter/
+│   ├── Inc/
+│   │   ├── filter_types.h     # Tipe data filter
+│   │   ├── filter_design.h    # Interface desain filter
+│   │   ├── iir_filter.h       # Interface IIR filter
+│   │   ├── biquad.h           # Interface biquad filter
+│   │   ├── butterworth.h      # Filter Butterworth
+│   │   ├── linkwitz_riley.h   # Filter Linkwitz-Riley
+│   │   └── bessel.h           # Filter Bessel
+│   │
+│   └── Src/
+│       ├── filter_design.c    # Implementasi desain filter (300-400 baris)
+│       ├── iir_filter.c       # Implementasi IIR filter (200-300 baris)
+│       ├── biquad.c           # Implementasi biquad (200-300 baris)
+│       ├── butterworth.c      # Implementasi Butterworth (250-350 baris)
+│       ├── linkwitz_riley.c   # Implementasi L-R (250-350 baris)
+│       └── bessel.c           # Implementasi Bessel (250-350 baris)
 │
 ├── UI/
 │   ├── Inc/
-│   │   ├── oled_driver.h      # OLED SSD1306
+│   │   ├── ui_config.h        # Konfigurasi UI
+│   │   ├── oled_driver.h      # Interface OLED SSD1306
 │   │   ├── oled_graphics.h    # Library grafis
-│   │   ├── rotary_encoder.h   # Encoder
-│   │   ├── button_handler.h   # Button
-│   │   ├── menu_system.h      # Menu system
-│   │   └── ui_pages.h         # Menu pages definitions
+│   │   ├── rotary_encoder.h   # Interface encoder
+│   │   ├── button_handler.h   # Interface button
+│   │   ├── led_handler.h      # Interface LED
+│   │   ├── menu_system.h      # Sistem menu
+│   │   └── ui_pages.h         # Definisi halaman UI
 │   │
 │   └── Src/
-│       ├── oled_driver.c      # Driver OLED
-│       ├── oled_graphics.c    # Fungsi grafis
-│       └── [other UI files]
+│       ├── ui_config.c        # Implementasi konfigurasi UI (100-150 baris)
+│       ├── oled_driver.c      # Driver OLED (200-250 baris)
+│       ├── oled_graphics.c    # Fungsi grafis dasar (300-350 baris)
+│       ├── oled_text.c        # Rendering teks (200-250 baris)
+│       ├── oled_icons.c       # Rendering ikon (150-200 baris)
+│       ├── rotary_encoder.c   # Implementasi encoder (150-200 baris)
+│       ├── button_handler.c   # Implementasi button (150-200 baris)
+│       ├── led_handler.c      # Implementasi LED (100-150 baris)
+│       ├── menu_system.c      # Implementasi sistem menu (300-400 baris)
+│       ├── menu_navigation.c  # Navigasi menu (200-250 baris)
+│       ├── ui_pages_main.c    # Halaman utama UI (150-200 baris)
+│       ├── ui_pages_xover.c   # Halaman crossover (200-250 baris)
+│       ├── ui_pages_eq.c      # Halaman EQ (200-250 baris)
+│       ├── ui_pages_comp.c    # Halaman kompressor (200-250 baris)
+│       └── ui_pages_delay.c   # Halaman delay (150-200 baris)
 │
 ├── Storage/
 │   ├── Inc/
-│   │   ├── eeprom_driver.h    # Driver EEPROM
-│   │   ├── preset_manager.h   # Preset manager
-│   │   └── factory_presets.h  # Built-in presets
+│   │   ├── storage_types.h    # Tipe data storage
+│   │   ├── eeprom_driver.h    # Interface EEPROM
+│   │   ├── preset_manager.h   # Interface preset manager
+│   │   └── factory_presets.h  # Preset bawaan
 │   │
 │   └── Src/
-│       ├── eeprom_driver.c    # Implementasi EEPROM
-│       ├── preset_manager.c   # Manajemen preset
-│       └── [preset files]
+│       ├── eeprom_driver.c    # Implementasi EEPROM (200-250 baris)
+│       ├── preset_manager.c   # Manajemen preset (300-350 baris)
+│       ├── preset_io.c        # Input/output preset (200-250 baris)
+│       └── factory_presets.c  # Implementasi preset bawaan (250-300 baris)
+│
+├── Utils/
+│   ├── Inc/
+│   │   ├── debug.h            # Fungsi debugging
+│   │   ├── math_utils.h       # Utilitas matematika
+│   │   ├── buffer_manager.h   # Manajemen buffer
+│   │   └── system_monitor.h   # Monitor sistem
+│   │
+│   └── Src/
+│       ├── debug.c            # Implementasi debug (150-200 baris)
+│       ├── math_utils.c       # Implementasi utilitas matematika (250-300 baris)
+│       ├── buffer_manager.c   # Implementasi manajemen buffer (200-250 baris)
+│       └── system_monitor.c   # Implementasi monitor sistem (150-200 baris)
 │
 └── build/                     # Output build folder
     └── AudioCrossover.bin     # Binary file untuk upload
