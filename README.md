@@ -481,9 +481,10 @@ Proyek ini dilisensikan di bawah lisensi MIT. Lihat file LICENSE untuk informasi
 ## Kontak
 
 Untuk pertanyaan atau dukungan, silakan hubungi:
-- Email: [dsp.audio.project@gmail.com]
-- Instagram: [@dsp_audio_project]
-
+- Email: [asepsupriatna@gmail.com]
+- Instagram: [@save_audio_project]
+- github.com/asepsupriatna90
 ---
 
 Dikembangkan dengan ❤️ untuk komunitas audio Indonesia
+
